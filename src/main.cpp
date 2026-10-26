@@ -592,8 +592,8 @@ const QualityPreset kPresets[] = {
      "probes, reflections on rougher surfaces and on glass, sharper lamp shadows, far shadow\n"
      "and draw distance, full-resolution character shadows, full skin shading, high-quality\n"
      "hair, 8 GB textures, 16x filtering, finer geometry and the higher-precision upscaler.\n\n"
-     "Measured on an RTX 5080 at 4K (70% resolution scale) in one scene: 52 fps with Game,\n"
-     "48.5 with Ultra+ (about 7% longer frames).\n\n"
+     "Measured on an RTX 5080 at 4K (70% resolution scale) in one scene: 52-53 fps with Game,\n"
+     "48.5-50 with Ultra+ (6-7% longer frames in two runs).\n\n"
      "Worth adding by hand if you have headroom: Detailed bounce light tracing (about +5%\n"
      "here) for less light leaking and softer, truer indirect light.",
      {{"GiProbes", 16}, {"ReflRoughness", 6}, {"ReflGlass", 1}, {"ShadowRes", 1}, {"ShadowDistance", 150},
@@ -602,15 +602,17 @@ const QualityPreset kPresets[] = {
     // Cinematic was everything at its highest: 17-19 fps (+169% to +215%), unplayable (user,
     // 2026-10-26). 0.2.2 drops the two choices that made it so: Cinematic probes (+107% alone) and
     // 16 shadow rays (+9% alone, but with Sharpest shadows they took the first Ultra+ to +46%).
-    // Estimated about +30% from the per-option costs; not measured as a whole yet.
-    {"Cinematic", "",
+    // Measured as a whole (0.2.2, same scene): Game 18.91 ms (52.9 fps), Ultra+ 20.05 ms (49.9 fps,
+    // +6%), Cinematic 24.55 ms (40.7 fps, +30%).
+    {"Cinematic", "about 30% slower",
      "Ultra+ plus the costlier upgrades that still play well: detailed bounce light tracing\n"
      "(less light leaking through walls), reflections on rougher surfaces (0.8), the sharpest\n"
      "shadows and the finest fog.\n\n"
      "Leaves out Cinematic lighting probes (they double the frame time) and 16 soft-shadow\n"
      "rays (costly together with the sharpest shadows); both stay on the Lighting and Shadows\n"
-     "tabs for screenshots. Expect about 30% longer frames than Game (estimated from each\n"
-     "option's cost on an RTX 5080 at 4K, 70% resolution scale). Not measured as a whole yet.",
+     "tabs for screenshots.\n\n"
+     "Measured on an RTX 5080 at 4K (70% resolution scale) in one scene: 53 fps with Game,\n"
+     "41 with Cinematic (about 30% longer frames).",
      {{"GiTracing", 1}, {"GiProbes", 16}, {"ReflRoughness", 8}, {"ReflGlass", 1}, {"ShadowRes", 2},
       {"ShadowDistance", 150}, {"CapsuleShadows", 1}, {"Skin", 1}, {"Hair", 1}, {"TexturePool", 8192},
       {"Anisotropy", 16}, {"ViewDistance", 150}, {"NaniteDetail", 1}, {"FogCells", 4}, {"TsrHistory", 1}}},

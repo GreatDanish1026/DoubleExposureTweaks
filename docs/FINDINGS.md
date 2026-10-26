@@ -159,12 +159,20 @@ Measured as a whole with 0.2.0, same scene: Game 19.29 ms (51.8 fps), Ultra+ 20.
 Cinematic at 17-19 fps was unplayable (user, 2026-10-26). 0.2.2's Cinematic drops Cinematic
 probes (+107%) and 16 shadow rays (compound with Sharpest); it is Ultra+ plus detailed bounce light
 (+5%), reflections 0.8 (+6% vs +2%), Sharpest shadows (+4.6% vs Sharp) and Fine fog (+11%).
-Estimated +30% (about 40 fps in this scene); to be measured. 16 shadow rays are now in no preset,
-so presets leave that option alone.
+Estimated +30%. 16 shadow rays are now in no preset, so presets leave that option alone.
+
+Measured with 0.2.2, same scene: Game 18.91 ms (52.9 fps), Ultra+ 20.05 ms (49.9 fps, +6%),
+Cinematic 24.55 ms (40.7 fps, **+30%**, as estimated).
+
+| preset | cost (fps in this scene) |
+|---|---|
+| Game | 52-53 |
+| Ultra+ | +6-7% (48.5-50) |
+| Cinematic | +30% (41) |
 
 ## Still to do
 
-- Measure the new Cinematic; F8 visual check.
+- F8 visual check.
 - DLSS (separate add-on, from ReunionDLSS).
 - A probe at each menu tier.
 - DLSS (separate add-on, from ReunionDLSS).
