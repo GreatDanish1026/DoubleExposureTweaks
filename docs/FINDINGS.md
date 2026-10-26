@@ -133,9 +133,29 @@ This also proves the renderer uses values set from ReShade's thread at once (UE 
 copy works). Ultra+ is three times dearer than in Reunion (+15%), so some option that was nearly
 free there isn't here; "Measure each option" will show which.
 
+"Measure each option", same scene and settings (Game 18.92 ms at the start, 18.80 at the end, so
+little drift; 10 s per stage):
+
+| option | cost |
+|---|---|
+| GiProbes Cinematic | +106.9% (+20.15 ms) |
+| FogCells Fine (4 px) | +10.8% |
+| ShadowSoft Cinematic (16 rays) | +9.3% |
+| ReflRoughness 0.8 | +6.0% |
+| GiTracing Detailed | +5.0% (Reunion: +41%) |
+| ShadowRes Sharpest | +4.6% |
+| ReflRoughness 0.6 | +2.1% |
+| NaniteDetail Finer | +1.1% |
+| GiProbes Epic+, ShadowDistance Far, ReflGlass, CapsuleShadows, Skin, Hair, TexturePool 8 GB, Anisotropy 16x, FogCells Epic, ViewDistance Far, TsrHistory High | within ±1.2% (noise) |
+
+The old Ultra+'s parts sum to about +18%, but it measured +46% as a whole: Sharpest shadows and 16
+shadow rays most likely compound (more shadow-map texels for every ray). 0.2.0's Ultra+ keeps only
+options at 2% or less (with Sharp shadows, not measured alone, instead of Sharpest; no ShadowSoft:
+the game already uses Epic's 8 rays). Expected about +5%; to be measured as a whole.
+
 ## Still to do
 
-- Measure each option and rebuild Ultra+ from the cheap ones; F8 visual check.
+- Measure the new Ultra+ as a whole; F8 visual check.
 - A probe at each menu tier.
 - DLSS (separate add-on, from ReunionDLSS).
 - Measure preset costs.

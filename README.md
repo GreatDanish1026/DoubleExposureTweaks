@@ -4,7 +4,7 @@ A ReShade add-on for **Life is Strange: Double Exposure** (Unreal Engine 5.2, Di
 lighting, shadow and detail settings beyond the game's menu, live, from the ReShade overlay. Built
 from ReunionTweaks.
 
-Work in progress (0.1.2): the options aren't tested in this game yet.
+Work in progress (0.2.0): options work in game; Ultra+ rebuilt from measured costs.
 
 ## Install
 

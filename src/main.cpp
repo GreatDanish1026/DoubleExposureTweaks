@@ -130,16 +130,17 @@ struct Option {
 std::vector<Option> g_options = {
     // ------------------------------------------------ lighting (software Lumen)
     {"Lighting", "Global illumination", "GiTracing", "Bounce light tracing",
-     "What Lumen traces bounce light against. Reunion (same studio) traces only a coarse\n"
-     "whole-scene distance field at every menu tier: soft, blobby bounce light and leaks\n"
-     "through thin walls. Detailed traces each object's own distance field near the camera.\n"
-     "Expensive (about 40% longer frames in Reunion).",
+     "What Lumen traces bounce light against. The game traces only a coarse whole-scene\n"
+     "distance field: soft, blobby bounce light and leaks through thin walls. Detailed traces\n"
+     "each object's own distance field near the camera.\n"
+     "About 5% longer frames here (it was 40% in Reunion).",
      L"r.Lumen.TraceMeshSDFs.Allow",
      {{"Game", 0, {}}, {"Detailed", 1, {{L"r.Lumen.TraceMeshSDFs.Allow", L"1"}}}}},
     {"Lighting", "Global illumination", "GiProbes", "Bounce light detail",
-     "Spacing of Lumen's lighting probes in pixels and how many rays each traces. Epic+ is\n"
-     "16 px with more far-field probes; Cinematic is 8 px with twice the rays per probe:\n"
-     "steadier, more detailed indirect light on faces and walls. Cinematic is expensive.",
+     "Spacing of Lumen's lighting probes in pixels and how many rays each traces. The game\n"
+     "uses 16 px with a budget of 300 far-field probes. Epic+ raises the budget to 500 (free).\n"
+     "Cinematic is 8 px with twice the rays per probe: steadier, more detailed indirect light\n"
+     "on faces and walls, but it doubles the frame time (+107% measured).",
      L"r.Lumen.ScreenProbeGather.DownsampleFactor",
      {{"Game", 0, {}},
       {"Epic+", 16,
@@ -151,8 +152,9 @@ std::vector<Option> g_options = {
         {L"r.Lumen.ScreenProbeGather.RadianceCache.NumProbesToTraceBudget", L"1000"}}}}},
     {"Lighting", "Reflections", "ReflRoughness", "Reflections on rougher surfaces",
      "Lumen traces reflections up to this roughness; rougher surfaces (wood, painted\n"
-     "walls, skin) fall back to blurry probe lighting. UE 5.2 caps this at what each scene's\n"
-     "post-process settings allow, so it may change little in some places.",
+     "walls, skin) fall back to blurry probe lighting. The game uses 0.4. UE 5.2 caps this at\n"
+     "what each scene's post-process settings allow, so it may change little in some places.\n"
+     "About 2% (0.6) and 6% (0.8) longer frames.",
      L"r.Lumen.Reflections.MaxRoughnessToTrace",
      {{"Game", 0, {}},
       {"0.6", 6, {{L"r.Lumen.Reflections.MaxRoughnessToTrace", L"0.6"}}},
@@ -164,9 +166,10 @@ std::vector<Option> g_options = {
 
     // ------------------------------------------------ shadows
     {"Shadows", "Sun, moon and lamps", "ShadowRes", "Shadow sharpness",
-     "Resolution of the virtual shadow maps (lower bias = sharper), for the sun and for\n"
-     "lamps. Sharp: -0.5 with twice the shadow memory. Sharpest: -1 with four times.\n"
-     "(UE 5.2 has no separate setting for moving objects.)",
+     "Resolution of the virtual shadow maps (lower bias = sharper). The game uses -0.5 for\n"
+     "the sun but 0.5 for lamps (noticeably softer). Sharp: -0.5 for both, twice the shadow\n"
+     "memory. Sharpest: -1 for both, four times the memory, about 5% longer frames (more\n"
+     "with 16 soft-shadow rays). UE 5.2 has no separate setting for moving objects.",
      L"r.Shadow.Virtual.ResolutionLodBiasLocal",
      {{"Game", 0, {}},
       {"Sharp", 1,
@@ -178,8 +181,9 @@ std::vector<Option> g_options = {
         {L"r.Shadow.Virtual.ResolutionLodBiasDirectional", L"-1"},
         {L"r.Shadow.Virtual.ResolutionLodBiasLocal", L"-1"}}}}},
     {"Shadows", "Sun, moon and lamps", "ShadowSoft", "Soft shadow quality",
-     "Rays per pixel for the soft edges of shadows. More rays give smoother, steadier soft\n"
-     "shadows.",
+     "Rays per pixel for the soft edges of shadows. The game already uses 8 rays of 4\n"
+     "samples (Epic). 16 rays give smoother, steadier soft shadows for about 9% longer\n"
+     "frames, more together with Sharpest shadows.",
      L"r.Shadow.Virtual.SMRT.RayCountLocal",
      {{"Game", 0, {}},
       {"Epic (8 rays)", 8,
@@ -205,13 +209,15 @@ std::vector<Option> g_options = {
 
     // ------------------------------------------------ characters
     {"Characters", "Skin and hair", "Skin", "Skin quality",
-     "Subsurface scattering (light through skin) can be computed on a checkerboard and\n"
-     "filled in; Full computes every pixel: smoother skin, no fine dithering on faces.",
+     "Subsurface scattering (light through skin): the game computes it on a checkerboard and\n"
+     "fills in the rest; Full computes every pixel: smoother skin, no fine dithering on faces.\n"
+     "Free.",
      L"r.SSS.Checkerboard",
      {{"Game", 0, {}}, {"Full", 1, {{L"r.SSS.Checkerboard", L"0"}}}}},
     {"Characters", "Skin and hair", "Hair", "Hair quality",
-     "Strand hair samples per pixel and its shadow map resolution: fewer samples make fine\n"
-     "strands break up and shimmer, most visible at reduced resolution scale.",
+     "Strand hair samples per pixel and its shadow map resolution. The game uses 4 samples\n"
+     "and 2048 px: fine strands break up and shimmer, most visible at reduced resolution\n"
+     "scale. High: 8 samples, 4096 px. Free.",
      L"r.HairStrands.Visibility.MSAA.SamplePerPixel",
      {{"Game", 0, {}},
       {"High", 1,
@@ -221,15 +227,16 @@ std::vector<Option> g_options = {
 
     // ------------------------------------------------ detail
     {"Detail", "Textures", "TexturePool", "Texture memory",
-     "Video memory for streamed textures. Too little makes textures go blurry and reload.",
+     "Video memory for streamed textures. The game keeps 1.4 GB whatever the card, so\n"
+     "textures go blurry and reload. Free on a 16 GB card.",
      L"r.Streaming.PoolSize",
      {{"Game", 0, {}},
       {"4 GB", 4096, {{L"r.Streaming.PoolSize", L"4096"}}},
       {"6 GB", 6144, {{L"r.Streaming.PoolSize", L"6144"}}},
       {"8 GB", 8192, {{L"r.Streaming.PoolSize", L"8192"}}}}},
     {"Detail", "Textures", "Anisotropy", "Anisotropic filtering",
-     "Sharper floors and roads at shallow angles. Textures already loaded keep their\n"
-     "filtering until they reload (or the game restarts).",
+     "Sharper floors and roads at shallow angles. The game uses 8x. Textures already loaded\n"
+     "keep their filtering until they reload (or the game restarts). Free.",
      L"r.MaxAnisotropy",
      {{"Game", 0, {}}, {"16x", 16, {{L"r.MaxAnisotropy", L"16"}, {L"r.VT.MaxAnisotropy", L"16"}}}}},
     {"Detail", "Distance", "ViewDistance", "Draw distance",
@@ -241,12 +248,14 @@ std::vector<Option> g_options = {
        {{L"r.ViewDistanceScale", L"1.5"}, {L"foliage.DensityScale", L"1"}, {L"foliage.LODDistanceScale", L"1.5"}}}}},
     {"Detail", "Distance", "NaniteDetail", "Geometry detail",
      "Triangle size of the detailed (Nanite) models, in pixels. Smaller keeps more detail\n"
-     "on distant and mid-range surfaces. Matters most at reduced resolution scale.",
+     "on distant and mid-range surfaces. The game uses 1 px. Matters most at reduced\n"
+     "resolution scale. About 1% longer frames.",
      L"r.Nanite.MaxPixelsPerEdge",
      {{"Game", 0, {}}, {"Finer (0.5 px)", 1, {{L"r.Nanite.MaxPixelsPerEdge", L"0.5"}}}}},
     {"Detail", "Fog", "FogCells", "Volumetric fog detail",
      "Size of the fog's light grid in screen pixels and its depth slices: coarse grids give\n"
-     "blocky light shafts and flicker around lamps.",
+     "blocky light shafts and flicker around lamps. The game uses 8 px and 128 slices at your\n"
+     "menu setting (Epic); lower menu tiers are coarser. Fine (4 px): about 11% longer frames.",
      L"r.VolumetricFog.GridPixelSize",
      {{"Game", 0, {}},
       {"Epic (8 px)", 8,
@@ -571,21 +580,24 @@ struct QualityPreset {
 
 const QualityPreset kPresets[] = {
     {"Game", "", "The game's own settings: everything below at Game.", {}},
-    // Same make-up as ReunionTweaks' Ultra+ (the options that were nearly free there). Measured
-    // 2026-10-26 with "Measure preset costs": RTX 5080, 4K at 70% resolution scale (TSR), HDR,
-    // one scene: Game 18.45 ms (54 fps) / Ultra+ 26.99 ms (37 fps, +46%) / Cinematic 58.19 ms
-    // (17 fps, +215%). Much dearer than in Reunion (+15%); per-option costs still to measure.
-    {"Ultra+", "about 46% slower",
-     "Everything beyond the menu's Epic that was cheap in Reunion: more lighting probes,\n"
-     "reflections on rougher surfaces and on glass, the sharpest and smoothest shadows, full\n"
-     "skin shading, high-quality hair, 8 GB textures, 16x filtering, far draw distance, finer\n"
-     "geometry, Epic fog and the higher-precision upscaler. Leaves out detailed bounce light\n"
-     "tracing and Cinematic probes.\n\n"
-     "Measured on an RTX 5080 at 4K (70% resolution scale) in one scene: 54 fps with Game,\n"
-     "37 with Ultra+. Measure each option shows which parts cost the most.",
-     {{"GiProbes", 16}, {"ReflRoughness", 6}, {"ReflGlass", 1}, {"ShadowRes", 2}, {"ShadowSoft", 16},
-      {"ShadowDistance", 150}, {"CapsuleShadows", 1}, {"Skin", 1}, {"Hair", 1}, {"TexturePool", 8192},
-      {"Anisotropy", 16}, {"ViewDistance", 150}, {"NaniteDetail", 1}, {"FogCells", 8}, {"TsrHistory", 1}}},
+    // Rebuilt 2026-10-26 from "Measure each option" (RTX 5080, 4K at 70% scale, one scene; table in
+    // docs/FINDINGS.md): every option at 2% or less. The first Ultra+ (Reunion's make-up) measured
+    // +46% though its parts summed to about +18%: Sharpest shadows (+4.6%) and 16 shadow rays
+    // (+9.3%) cost more together. Both are out; Sharp shadows (not measured alone) are in.
+    // Fine fog (+11%), Cinematic probes (+107%), 0.8 reflections (+6%) and detailed bounce light
+    // (+5%) are out. Total not measured yet.
+    {"Ultra+", "",
+     "Everything beyond the menu that measured nearly free in this game: more lighting\n"
+     "probes, reflections on rougher surfaces and on glass, sharper lamp shadows, far shadow\n"
+     "and draw distance, full-resolution character shadows, full skin shading, high-quality\n"
+     "hair, 8 GB textures, 16x filtering, finer geometry and the higher-precision upscaler.\n\n"
+     "Each part cost 2% or less on its own (RTX 5080, 4K at 70% resolution scale); expect about\n"
+     "5% in all. Not measured as a whole yet: Measure preset costs checks it.\n\n"
+     "Worth adding by hand if you have headroom: Detailed bounce light tracing (about +5%\n"
+     "here) for less light leaking and softer, truer indirect light.",
+     {{"GiProbes", 16}, {"ReflRoughness", 6}, {"ReflGlass", 1}, {"ShadowRes", 1}, {"ShadowDistance", 150},
+      {"CapsuleShadows", 1}, {"Skin", 1}, {"Hair", 1}, {"TexturePool", 8192}, {"Anisotropy", 16},
+      {"ViewDistance", 150}, {"NaniteDetail", 1}, {"FogCells", 8}, {"TsrHistory", 1}}},
     {"Cinematic", "about 3.2x frame time",
      "Everything at its highest: Cinematic bounce light and soft shadows, sharpest shadows,\n"
      "high-quality hair, finer geometry, far draw distance and finest fog. For photo mode or a\n"
