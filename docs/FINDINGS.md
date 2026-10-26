@@ -156,9 +156,15 @@ the game already uses Epic's 8 rays). Expected about +5%.
 Measured as a whole with 0.2.0, same scene: Game 19.29 ms (51.8 fps), Ultra+ 20.60 ms (48.5 fps,
 **+7%**), Cinematic 51.94 ms (19.3 fps, +169%; +215% in the first run).
 
+Cinematic at 17-19 fps was unplayable (user, 2026-10-26). 0.2.2's Cinematic drops Cinematic
+probes (+107%) and 16 shadow rays (compound with Sharpest); it is Ultra+ plus detailed bounce light
+(+5%), reflections 0.8 (+6% vs +2%), Sharpest shadows (+4.6% vs Sharp) and Fine fog (+11%).
+Estimated +30% (about 40 fps in this scene); to be measured. 16 shadow rays are now in no preset,
+so presets leave that option alone.
+
 ## Still to do
 
-- F8 visual check.
+- Measure the new Cinematic; F8 visual check.
 - DLSS (separate add-on, from ReunionDLSS).
 - A probe at each menu tier.
 - DLSS (separate add-on, from ReunionDLSS).

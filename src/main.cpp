@@ -599,14 +599,21 @@ const QualityPreset kPresets[] = {
      {{"GiProbes", 16}, {"ReflRoughness", 6}, {"ReflGlass", 1}, {"ShadowRes", 1}, {"ShadowDistance", 150},
       {"CapsuleShadows", 1}, {"Skin", 1}, {"Hair", 1}, {"TexturePool", 8192}, {"Anisotropy", 16},
       {"ViewDistance", 150}, {"NaniteDetail", 1}, {"FogCells", 8}, {"TsrHistory", 1}}},
-    {"Cinematic", "about 3x frame time",
-     "Everything at its highest: Cinematic bounce light and soft shadows, sharpest shadows,\n"
-     "high-quality hair, finer geometry, far draw distance and finest fog. For photo mode or a\n"
-     "lot of GPU headroom: 17-19 fps on an RTX 5080 at 4K (70% resolution scale) in one scene.",
-     {{"GiTracing", 1}, {"GiProbes", 8}, {"ReflRoughness", 8}, {"ReflGlass", 1}, {"ShadowRes", 2},
-      {"ShadowSoft", 16}, {"ShadowDistance", 150}, {"CapsuleShadows", 1}, {"Skin", 1}, {"Hair", 1},
-      {"TexturePool", 8192}, {"Anisotropy", 16}, {"ViewDistance", 150}, {"NaniteDetail", 1}, {"FogCells", 4},
-      {"TsrHistory", 1}}},
+    // Cinematic was everything at its highest: 17-19 fps (+169% to +215%), unplayable (user,
+    // 2026-10-26). 0.2.2 drops the two choices that made it so: Cinematic probes (+107% alone) and
+    // 16 shadow rays (+9% alone, but with Sharpest shadows they took the first Ultra+ to +46%).
+    // Estimated about +30% from the per-option costs; not measured as a whole yet.
+    {"Cinematic", "",
+     "Ultra+ plus the costlier upgrades that still play well: detailed bounce light tracing\n"
+     "(less light leaking through walls), reflections on rougher surfaces (0.8), the sharpest\n"
+     "shadows and the finest fog.\n\n"
+     "Leaves out Cinematic lighting probes (they double the frame time) and 16 soft-shadow\n"
+     "rays (costly together with the sharpest shadows); both stay on the Lighting and Shadows\n"
+     "tabs for screenshots. Expect about 30% longer frames than Game (estimated from each\n"
+     "option's cost on an RTX 5080 at 4K, 70% resolution scale). Not measured as a whole yet.",
+     {{"GiTracing", 1}, {"GiProbes", 16}, {"ReflRoughness", 8}, {"ReflGlass", 1}, {"ShadowRes", 2},
+      {"ShadowDistance", 150}, {"CapsuleShadows", 1}, {"Skin", 1}, {"Hair", 1}, {"TexturePool", 8192},
+      {"Anisotropy", 16}, {"ViewDistance", 150}, {"NaniteDetail", 1}, {"FogCells", 4}, {"TsrHistory", 1}}},
 };
 constexpr int kPresetCount = static_cast<int>(sizeof(kPresets) / sizeof(kPresets[0]));
 
