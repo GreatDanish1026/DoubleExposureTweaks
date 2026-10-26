@@ -585,23 +585,24 @@ const QualityPreset kPresets[] = {
     // +46% though its parts summed to about +18%: Sharpest shadows (+4.6%) and 16 shadow rays
     // (+9.3%) cost more together. Both are out; Sharp shadows (not measured alone) are in.
     // Fine fog (+11%), Cinematic probes (+107%), 0.8 reflections (+6%) and detailed bounce light
-    // (+5%) are out. Total not measured yet.
-    {"Ultra+", "",
+    // (+5%) are out. Measured as a whole (0.2.0, same scene): Game 19.29 ms (51.8 fps), Ultra+
+    // 20.60 ms (48.5 fps, +7%), Cinematic 51.94 ms (19.3 fps, +169%).
+    {"Ultra+", "about 7% slower",
      "Everything beyond the menu that measured nearly free in this game: more lighting\n"
      "probes, reflections on rougher surfaces and on glass, sharper lamp shadows, far shadow\n"
      "and draw distance, full-resolution character shadows, full skin shading, high-quality\n"
      "hair, 8 GB textures, 16x filtering, finer geometry and the higher-precision upscaler.\n\n"
-     "Each part cost 2% or less on its own (RTX 5080, 4K at 70% resolution scale); expect about\n"
-     "5% in all. Not measured as a whole yet: Measure preset costs checks it.\n\n"
+     "Measured on an RTX 5080 at 4K (70% resolution scale) in one scene: 52 fps with Game,\n"
+     "48.5 with Ultra+ (about 7% longer frames).\n\n"
      "Worth adding by hand if you have headroom: Detailed bounce light tracing (about +5%\n"
      "here) for less light leaking and softer, truer indirect light.",
      {{"GiProbes", 16}, {"ReflRoughness", 6}, {"ReflGlass", 1}, {"ShadowRes", 1}, {"ShadowDistance", 150},
       {"CapsuleShadows", 1}, {"Skin", 1}, {"Hair", 1}, {"TexturePool", 8192}, {"Anisotropy", 16},
       {"ViewDistance", 150}, {"NaniteDetail", 1}, {"FogCells", 8}, {"TsrHistory", 1}}},
-    {"Cinematic", "about 3.2x frame time",
+    {"Cinematic", "about 3x frame time",
      "Everything at its highest: Cinematic bounce light and soft shadows, sharpest shadows,\n"
      "high-quality hair, finer geometry, far draw distance and finest fog. For photo mode or a\n"
-     "lot of GPU headroom: 17 fps on an RTX 5080 at 4K (70% resolution scale) in one scene.",
+     "lot of GPU headroom: 17-19 fps on an RTX 5080 at 4K (70% resolution scale) in one scene.",
      {{"GiTracing", 1}, {"GiProbes", 8}, {"ReflRoughness", 8}, {"ReflGlass", 1}, {"ShadowRes", 2},
       {"ShadowSoft", 16}, {"ShadowDistance", 150}, {"CapsuleShadows", 1}, {"Skin", 1}, {"Hair", 1},
       {"TexturePool", 8192}, {"Anisotropy", 16}, {"ViewDistance", 150}, {"NaniteDetail", 1}, {"FogCells", 4},

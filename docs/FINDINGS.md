@@ -151,11 +151,15 @@ little drift; 10 s per stage):
 The old Ultra+'s parts sum to about +18%, but it measured +46% as a whole: Sharpest shadows and 16
 shadow rays most likely compound (more shadow-map texels for every ray). 0.2.0's Ultra+ keeps only
 options at 2% or less (with Sharp shadows, not measured alone, instead of Sharpest; no ShadowSoft:
-the game already uses Epic's 8 rays). Expected about +5%; to be measured as a whole.
+the game already uses Epic's 8 rays). Expected about +5%.
+
+Measured as a whole with 0.2.0, same scene: Game 19.29 ms (51.8 fps), Ultra+ 20.60 ms (48.5 fps,
+**+7%**), Cinematic 51.94 ms (19.3 fps, +169%; +215% in the first run).
 
 ## Still to do
 
-- Measure the new Ultra+ as a whole; F8 visual check.
+- F8 visual check.
+- DLSS (separate add-on, from ReunionDLSS).
 - A probe at each menu tier.
 - DLSS (separate add-on, from ReunionDLSS).
 - Measure preset costs.
