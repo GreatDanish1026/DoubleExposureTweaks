@@ -118,12 +118,24 @@ menu can change them again. Only `r.Shadow.Virtual.MaxPhysicalPages` differed fr
 connect-time snapshot: 6144 (0x01) at connect, then the game's code set 4096 (0x09) before Ultra+ was
 picked, and 4096 is what came back.
 
-Not shown by the log: whether the renderer uses the new values at once. Measure preset costs (a
-frame-time change) or an F8 visual comparison shows that.
+## Costs (2026-10-26)
+
+"Measure preset costs" in one scene (RTX 5080, 4K at 70% resolution scale, TSR, HDR10; the user's
+post-processing choices held in every stage):
+
+| stage | frame time | fps | vs Game |
+|---|---|---|---|
+| Game | 18.45 ms | 54.2 | |
+| Ultra+ | 26.99 ms | 37.0 | +46% |
+| Cinematic | 58.19 ms | 17.2 | +215% |
+
+This also proves the renderer uses values set from ReShade's thread at once (UE 5.2 render-thread
+copy works). Ultra+ is three times dearer than in Reunion (+15%), so some option that was nearly
+free there isn't here; "Measure each option" will show which.
 
 ## Still to do
 
-- Measure preset costs; F8 visual check.
+- Measure each option and rebuild Ultra+ from the cheap ones; F8 visual check.
 - A probe at each menu tier.
 - DLSS (separate add-on, from ReunionDLSS).
 - Measure preset costs.

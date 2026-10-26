@@ -571,21 +571,25 @@ struct QualityPreset {
 
 const QualityPreset kPresets[] = {
     {"Game", "", "The game's own settings: everything below at Game.", {}},
-    // Same make-up as ReunionTweaks' Ultra+ (the options that were nearly free there).
-    {"Ultra+", "",
+    // Same make-up as ReunionTweaks' Ultra+ (the options that were nearly free there). Measured
+    // 2026-10-26 with "Measure preset costs": RTX 5080, 4K at 70% resolution scale (TSR), HDR,
+    // one scene: Game 18.45 ms (54 fps) / Ultra+ 26.99 ms (37 fps, +46%) / Cinematic 58.19 ms
+    // (17 fps, +215%). Much dearer than in Reunion (+15%); per-option costs still to measure.
+    {"Ultra+", "about 46% slower",
      "Everything beyond the menu's Epic that was cheap in Reunion: more lighting probes,\n"
      "reflections on rougher surfaces and on glass, the sharpest and smoothest shadows, full\n"
      "skin shading, high-quality hair, 8 GB textures, 16x filtering, far draw distance, finer\n"
      "geometry, Epic fog and the higher-precision upscaler. Leaves out detailed bounce light\n"
-     "tracing and Cinematic probes (the expensive ones).\n\n"
-     "Not measured in this game yet: use Measure preset costs.",
+     "tracing and Cinematic probes.\n\n"
+     "Measured on an RTX 5080 at 4K (70% resolution scale) in one scene: 54 fps with Game,\n"
+     "37 with Ultra+. Measure each option shows which parts cost the most.",
      {{"GiProbes", 16}, {"ReflRoughness", 6}, {"ReflGlass", 1}, {"ShadowRes", 2}, {"ShadowSoft", 16},
       {"ShadowDistance", 150}, {"CapsuleShadows", 1}, {"Skin", 1}, {"Hair", 1}, {"TexturePool", 8192},
       {"Anisotropy", 16}, {"ViewDistance", 150}, {"NaniteDetail", 1}, {"FogCells", 8}, {"TsrHistory", 1}}},
-    {"Cinematic", "",
+    {"Cinematic", "about 3.2x frame time",
      "Everything at its highest: Cinematic bounce light and soft shadows, sharpest shadows,\n"
      "high-quality hair, finer geometry, far draw distance and finest fog. For photo mode or a\n"
-     "lot of GPU headroom (about 2.4x the frame time in Reunion).",
+     "lot of GPU headroom: 17 fps on an RTX 5080 at 4K (70% resolution scale) in one scene.",
      {{"GiTracing", 1}, {"GiProbes", 8}, {"ReflRoughness", 8}, {"ReflGlass", 1}, {"ShadowRes", 2},
       {"ShadowSoft", 16}, {"ShadowDistance", 150}, {"CapsuleShadows", 1}, {"Skin", 1}, {"Hair", 1},
       {"TexturePool", 8192}, {"Anisotropy", 16}, {"ViewDistance", 150}, {"NaniteDetail", 1}, {"FogCells", 4},
