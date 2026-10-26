@@ -105,9 +105,26 @@ Values (set by):
 
 No 60 s probe yet (the launch was closed sooner), and setting values hasn't been tried yet.
 
+## Setting values works (2026-10-26)
+
+Run-time layout check, as predicted offline: IsVariableBool at `+0x30`; `r.MaxAnisotropy` and
+`r.ScreenPercentage` are data cvars with their value at `+0x48`; sinks flag at manager `+0xe0`;
+singleton found by all 6 lookups. The user plays at 70% resolution scale, HDR10 PQ.
+
+Ultra+ in a scene, F8 off/on twice: 27 values applied every time, 0 failed, 0 render-thread copy
+warnings (all are data cvars), nothing changed back by the game. With tweaks off (60 s probe) every
+held cvar was back at the game's value **and** its original SetBy priority (0x00/0x01/0x05), so the
+menu can change them again. Only `r.Shadow.Virtual.MaxPhysicalPages` differed from the add-on's
+connect-time snapshot: 6144 (0x01) at connect, then the game's code set 4096 (0x09) before Ultra+ was
+picked, and 4096 is what came back.
+
+Not shown by the log: whether the renderer uses the new values at once. Measure preset costs (a
+frame-time change) or an F8 visual comparison shows that.
+
 ## Still to do
 
-- Set options in game and check the log (applied / not taken / render-thread copy lines).
-- A probe in a scene, and at each menu tier.
+- Measure preset costs; F8 visual check.
+- A probe at each menu tier.
+- DLSS (separate add-on, from ReunionDLSS).
 - Measure preset costs.
 - DLSS (separate add-on, from ReunionDLSS): TSR passes must be captured again (5.2's TSR differs).
