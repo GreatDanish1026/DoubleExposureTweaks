@@ -846,11 +846,13 @@ void RayTracingOnPresent() {
 //   Stage 1 "armed": the add-on wrote the settings under [/Script/Engine.RendererSettings]; the
 //     next launch tests. Written again when the add-on unloads (the game rewrites Engine.ini on
 //     exit and would drop them).
-//   Stage 2 "running": this launch (Pid) started with them. 10 s after the add-on connects to the
-//     game's settings, r.RayTracing is read: 1 = it works (kept until the user turns it off),
-//     0 = the game ignored it (settings taken out).
-//   A later launch that finds stage 2 with another Pid: the test launch never got that far (the
-//     game stopped at start, e.g. missing ray tracing shaders), so the settings are taken out.
+//   Stage 2 "running": this launch (Pid) started with them. The engine has read its config before
+//     ReShade loads the add-on, so the lines are taken out at once: a launch that stops at start
+//     (missing ray tracing shaders) can't take the next launch down with it. 10 s after the
+//     add-on connects to the game's settings, r.RayTracing is read: 1 = it works (lines written
+//     back, kept until the user turns it off), 0 = the game ignored it.
+//   A later launch that finds stage 2 with another Pid: the test launch never got that far, so
+//     the test failed (the next launch already started without the settings).
 //   Stage 3 "done": Result holds the outcome.
 //
 // State lives in DoubleExposureTweaks-rttest.ini next to the exe (not ReShade.ini: ReShade may
@@ -944,18 +946,22 @@ void RtTestOnLoad() {
             Log("ray tracing test: Engine.ini had lost the setting; written again, test on the next launch");
             return;
         }
+        // The engine has read its config by now, so the lines come out at once: if this launch
+        // stops at start, the next one starts clean. They go back in only if the test passes.
+        RemoveRtLines();
         g_rt.stage = 2;
         g_rt.pid = me;
         SaveRtState();
-        Log("ray tracing test: this launch started with r.RayTracing=1%s in Engine.ini",
+        Log("ray tracing test: this launch started with r.RayTracing=1%s in Engine.ini (taken out again until "
+            "the check passes)",
             g_rt.skinCache ? " and r.SkinCache.CompileShaders=1" : "");
     } else if (g_rt.stage == 2 && g_rt.pid != me) {
-        RemoveRtLines();
+        RemoveRtLines();  // already out since that launch started; just in case
         g_rt.stage = 3;
         g_rt.works = false;
         g_rt.result =
             "The test launch closed before the check (most likely it stopped at start: no ray tracing "
-            "shaders shipped). The setting was taken out of Engine.ini.";
+            "shaders shipped). The setting is out of Engine.ini.";
         SaveRtState();
         Log("ray tracing test: the previous launch (pid %lu) never reached the check; setting removed", g_rt.pid);
     }
@@ -971,6 +977,7 @@ void RtTestOnPresent() {
     char buf[400];
     if (rt == L"1") {
         g_rt.works = true;
+        WriteRtLines();  // keep it from now on
         snprintf(buf, sizeof(buf),
                  "The game started with hardware ray tracing on (r.RayTracing = 1, skin cache %s; %llu acceleration "
                  "structure builds so far). It stays on until you turn it off here.",
@@ -1192,9 +1199,10 @@ void DrawRayTracingTest() {
                 if (ImGui::Button("Test on next launch")) ArmRtTest();
                 Help("Hardware ray tracing can only be switched on at startup. This writes\n"
                      "r.RayTracing=1 (plus r.SkinCache.CompileShaders=1 if it's off) to your\n"
-                     "Engine.ini; restart the game to test. If the game stops at start (Reunion\n"
-                     "does: its ray tracing shaders weren't shipped), just start it again: the\n"
-                     "add-on sees the test never finished and takes the setting out.\n\n"
+                     "Engine.ini; restart the game to test. The test launch takes the setting out\n"
+                     "again as soon as it starts and puts it back only if ray tracing came on, so if\n"
+                     "the game stops at start (missing ray tracing shaders), the next launch is\n"
+                     "normal and shows the result here.\n\n"
                      "On its own this turns nothing visible on: it shows whether the game can run\n"
                      "ray tracing at all, which ray-traced options would need.");
             }
@@ -1378,8 +1386,9 @@ BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID) {
             reshade::register_overlay(DT_PRODUCT, &DrawOverlay);
             break;
         case DLL_PROCESS_DETACH:
-            // The game rewrites Engine.ini when it exits; put an armed or working test back.
-            if (g_rt.stage == 1 || g_rt.stage == 2 || (g_rt.stage == 3 && g_rt.works)) WriteRtLines();
+            // The game rewrites Engine.ini when it exits; put an armed test or a passed one back.
+            // Never during a running test (stage 2): its lines are out on purpose.
+            if (g_rt.stage == 1 || (g_rt.stage == 3 && g_rt.works)) WriteRtLines();
             reshade::unregister_addon(module);
             if (g_log) fclose(g_log);
             break;

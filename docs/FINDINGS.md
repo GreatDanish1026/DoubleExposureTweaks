@@ -59,18 +59,55 @@ No `D9.SigMan.*` (Reunion's character detail manager).
 Not in 5.2 (dropped from ReunionTweaks' options): `r.Lumen.Reflections.MaxRoughnessToTraceClamp`,
 `r.Shadow.Virtual.ResolutionLodBias*Moving`, `D9.SigMan.*`.
 
-## Hardware ray tracing: untested
+## No hardware ray tracing
 
-`r.RayTracing`, `r.RayTracing.Enable`, `r.Lumen.HardwareRayTracing`, `r.Lumen.Reflections.HardwareRayTracing`,
-`r.RayTracing.Shadows/Reflections/AmbientOcclusion/Translucency`, `r.SkinCache.CompileShaders` all
-exist. Whether the ray tracing shaders were cooked can only be told by starting the game with
-`r.RayTracing=1` (Reunion stopped at start: "Missing global shader FNiagaraCollisionRayTraceMiss").
-The add-on's Advanced tab runs that test (see main.cpp, "ray tracing test").
+`r.RayTracing`, `r.Lumen.HardwareRayTracing` and the other ray tracing cvars exist, but the project
+has `r.RayTracing=0` (set by `0x03`, project settings) and no ray tracing shaders were cooked. The
+add-on's test (2026-10-26) started the game with `r.RayTracing=1` in Engine.ini
+(`r.SkinCache.CompileShaders` was already 1) and it stopped at start:
+
+    LowLevelFatalError [ShaderCompiler.cpp] [Line: 7173]
+    Missing global shader FVisualizeSkyLightMipTreePS's permutation 0, Please make sure cooking was successful.
+
+Same as Reunion. Lumen always runs in software; nothing in the add-on uses hardware ray tracing.
+
+The first version of the test only removed the setting on the launch *after* the crash, but the
+engine reads Engine.ini before ReShade loads the add-on, so that launch would have crashed too.
+0.1.1 takes the lines out as soon as the test launch starts and writes them back only if the
+check passes.
+
+## First probe (title screen, 5 s after connecting, 2026-10-26)
+
+1354 values read, so the 5.2 layout holds (IsVariableBool slot found, getters work, priority bytes
+sane). Menu as in `GameUserSettings.ini` (shadows, GI, reflections, post, shading at 2; the rest 3).
+Values (set by):
+
+| cvar | value |
+|---|---|
+| `r.Lumen.TraceMeshSDFs.Allow` | 0 (0x01) |
+| `r.Lumen.ScreenProbeGather.DownsampleFactor` | 16 (0x01) |
+| `r.Lumen.Reflections.MaxRoughnessToTrace` | 0.4 |
+| `r.Shadow.Virtual.ResolutionLodBiasDirectional` / `Local` | -0.5 / 0.5 (0x01) |
+| `r.Shadow.Virtual.SMRT.RayCountLocal` | 8 |
+| `r.Shadow.Virtual.MaxPhysicalPages` | 4096 (0x09) |
+| `r.Streaming.PoolSize` | 1400 (0x05, device profile) |
+| `r.MaxAnisotropy` | 8 |
+| `r.SSS.Checkerboard` | 2 |
+| `r.HairStrands.Visibility.MSAA.SamplePerPixel` | 4 |
+| `r.TSR.History.R11G11B10` | 1 |
+| `r.VolumetricFog.GridPixelSize` | 8 |
+| `r.Nanite.MaxPixelsPerEdge` | 1 |
+| `r.ScreenPercentage` | 100 (0x09); `r.SecondaryScreenPercentage.GameViewport` 100 (0x02) |
+| `D9.Rendering.TargetSecondaryResolutionVertical` | 1080 |
+| `r.AntiAliasingMethod` | 4 (TSR) |
+| `r.HDR.Display.MaxLuminance` / `OutputDevice` | 1000 / 3 |
+| `r.FilmGrain` | 1 |
+
+No 60 s probe yet (the launch was closed sooner), and setting values hasn't been tried yet.
 
 ## Still to do
 
-- First launch: check the log's layout lines (IsVariableBool slot, data/ref copy, sinks flag) and
-  the probe (`DoubleExposureTweaks-probe.txt`) for the menu's values per tier.
-- Run the ray tracing test.
+- Set options in game and check the log (applied / not taken / render-thread copy lines).
+- A probe in a scene, and at each menu tier.
 - Measure preset costs.
 - DLSS (separate add-on, from ReunionDLSS): TSR passes must be captured again (5.2's TSR differs).
