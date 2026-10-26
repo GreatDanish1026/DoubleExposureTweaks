@@ -1,38 +1,71 @@
-# DoubleExposureTweaks
+# DoubleExposureTweaks 1.0.0
 
-A ReShade add-on for **Life is Strange: Double Exposure** (Unreal Engine 5.2, DirectX 12) that raises
-lighting, shadow and detail settings beyond the game's menu, live, from the ReShade overlay. Built
-from ReunionTweaks.
+Graphics add-on for **Life is Strange: Double Exposure** (PC, Steam), for ReShade with add-on
+support. Raises the game's lighting, shadow, character and detail settings beyond what its menu
+offers, live, from an in-game overlay.
 
-Work in progress (0.2.3): options work in game; Ultra+ rebuilt from measured costs.
+- **Lighting** (software Lumen): bounce light traced against each object instead of a coarse
+  whole-scene approximation (about 5% here), more lighting probes, reflections on rougher
+  surfaces and on glass and water.
+- **Shadows**: sharper lamp shadows (the game keeps them softer than the sun's), smoother soft
+  shadows, longer shadow distance, full-resolution character soft shadows.
+- **Characters**: full-resolution skin shading (the game uses a checkerboard), higher-quality
+  strand hair.
+- **Detail**: texture memory beyond the game's fixed 1.4 GB, 16x anisotropic filtering, draw
+  distance, finer geometry, finer volumetric fog, higher-precision TSR history.
+- **Post-processing**: switches for film grain, lens flares, depth of field, motion blur and
+  chromatic aberration.
+- **Quality presets**: *Ultra+* (everything beyond the menu that costs little; about 6-7% slower)
+  and *Cinematic* (the costlier upgrades that still play well; about 30% slower). Measured on an
+  RTX 5080 at 4K with 70% resolution scale in one scene. **Measure preset costs** runs each one
+  for a few seconds and shows its frame rate on your PC; **Measure each option** ranks every
+  option by cost (the most expensive choices, such as Cinematic lighting probes, are left out of
+  the presets and marked in their tooltips).
+- **F8** switches every tweak off and on, to compare.
+
+The game has no hardware ray tracing: its ray tracing shaders weren't shipped (starting it with
+`r.RayTracing=1` stops it at launch), so nothing here uses it. The Advanced tab has a test that
+checks this safely on your copy. Every option starts at the game's own value, and its tooltip
+says what the game uses and what the choice costs.
+
+## Requirements
+
+- Life is Strange: Double Exposure for PC (Steam build 16505703 tested; Unreal Engine 5.2). If
+  the game's code doesn't match, the add-on changes nothing and says so in the overlay and in
+  `DoubleExposureTweaks.log`.
+- [ReShade](https://reshade.me) 6.8 or newer **with full add-on support**, installed for
+  `Chronos-Win64-Shipping.exe` with DirectX 10/11/12.
 
 ## Install
 
-Needs ReShade 6.8 or newer **with add-on support**, installed for the game's
-`Chronos\Binaries\Win64\Chronos-Win64-Shipping.exe` (DirectX 12). Copy `DoubleExposureTweaks.addon64`
-next to that exe and open the ReShade overlay (Home) in game.
+1. Install ReShade with add-on support into
+   `...\LifeIsStrangeDoubleExposure\Chronos\Binaries\Win64`.
+2. Copy `DoubleExposureTweaks.addon64` into the same folder.
+3. Start the game and press **Home** to open ReShade. The settings are on the **Add-ons** tab,
+   under DoubleExposureTweaks.
 
-## Use
+Settings are saved in `ReShade.ini` under `[DoubleExposureTweaks]`. No game code is patched and,
+apart from the log and the optional settings dump, nothing else is written to disk; the one
+exception is the ray tracing test, which writes `r.RayTracing=1` to your `Engine.ini` for one
+launch when you start it and takes it out again (even if that launch fails). Deleting the
+`.addon64` file removes the mod completely.
 
-- Pick a quality preset or set options per tab; changes apply at once and are saved in ReShade.ini.
-- **F8** switches all tweaks off and on to compare.
-- **Advanced** tab: status, a hardware ray tracing test, a probe that writes every relevant
-  setting to a file, and a console variable field for experiments.
+## Advanced tab
 
-### Hardware ray tracing test
+- **Hardware ray tracing test**: writes the setting for the next launch, then reports whether
+  the game started with ray tracing on. The test launch removes the setting as soon as it starts,
+  so if the game stops at launch, the next start is normal.
+- **Probe**: writes every lighting, shadow, upscaling and detail setting with the game's value to
+  `DoubleExposureTweaks-probe.txt`.
+- **Console variable**: reads and sets a single setting, for experiments.
 
-Ray tracing can only be switched on at startup, so **Test on next launch** writes `r.RayTracing=1`
-(and the skin cache setting ray tracing needs) to your `Engine.ini` in
-`%LOCALAPPDATA%\Chronos\Saved\Config\Windows\`. Restart the game: the add-on reports whether it
-started with ray tracing on. If the game stops at start instead, start it again; the add-on sees
-the test never finished and takes the setting out.
+## Building
 
-## Files it writes (next to the game exe)
+`.\build.ps1` builds `bin\DoubleExposureTweaks.addon64` (needs Visual Studio 2022 with the C++
+tools). `.\build.ps1 -Install` also copies it into the game folder (close the game first);
+`.\build.ps1 -Package` makes the release zip in `bin\release`. See `docs/FINDINGS.md` for how the
+game's settings were found (UE 5.2's console variable layout differs from 5.5/5.6).
 
-- `DoubleExposureTweaks.log`
-- `DoubleExposureTweaks-probe.txt` (setting values, when probed)
-- `DoubleExposureTweaks-rttest.ini` (ray tracing test state)
+## License
 
-## Build
-
-`.\build.ps1 [-Install]` with Visual Studio 2022+ (C++ x64 tools). Details in `docs/FINDINGS.md`.
+MIT (see `LICENSE`). Third-party headers: see `THIRD_PARTY_NOTICES.txt`.
